@@ -1,0 +1,204 @@
+## Lecture 1: optimization and the knapsack problem
+#### 0/1 Knapsack Problem
+* as said in the introduction, we focus on building models: tools to better understand the world (in the future or past). There are three types: optimization, simulation, and statistical
+* optimization is about solving problems of the type: max/min/number etc.
+* optimization problems has two parts:
+  * an objective algorithm that should be minimized or maximized
+  * set of constraints (could be empty)
+* example: flying from berlin to paris as quickly as possible with contraints on budget and arrival time
+* takeaways from this course:
+  * many seemingly complicated prooblems are optimization problems
+  * it is easier to reformulate a seemingly new probblem into somethig that has been solved before and then use its solution for our problem
+  * optimization problems are computationally difficult and might never reach an answer
+  * for this we use greedy algorithms which reach an approximation of the answer (good enough solution)
+* knapsack problem: we have a knapsack with limited caapcity and want to fill it with objjects which in total are bigger than the capacity, which ones to take and which ones to leave?
+* there are two types of it:
+  * 0/1 you either take an object or leave it (picasso painnting)
+  * you can do parts (gold: if it is bar, then we have to decide how many bars, if dust, then we fill the knapsack to its maximum capacity)
+  * generally 0/1 is harder to solve
+* 0/1 knapsack problem:
+  * the knapsack has a total capacity of w
+  * each item is represented by a pair <value, weight>
+  * we have a vector I, of length n, which has all the items (each element an item)
+  * we have a vector V, of length n, which shows if the item has been taken or not (0 or 1)
+  * see lecture notes for formulas
+* brute force solution:
+  * enumerate the power set (alll possible combinations of items)
+  * remove the ones that do not satisfy the constraints
+  * pick the ones that maximize it
+* this is not practical:
+  * our power set is all the combinations of the vector V, which is 2^n
+  * this is exponetial, and inerently so, which means that it cannot be solved other than exponential
+  * it is hard prblems, but there are approximations for it.
+  * So 0/1 knapsack problem is inherently exponential
+  * there are optimal approximative solutionns to knapsack problem which work almost always
+
+#### Greedy algoritms
+* the course follows the finger exercise before, so we define different ways to sort items, and then test how they do on our dataset (which is abstracted using an object, and then a menu is built based upon it) (In the finger exercises, we saw that we define different metrics for the items like weight, value, weight to value ration and then start picking from highest to lowest if there is space, it runs most times, and each time non-optimal)
+* so we put the "best" item in, and keep doing until it is full or nothing fits
+* what is best though?
+* lamda is an anonymous function, so just lambda, list of arguments, and then expression on those arguments
+```python
+f1 = lambda x,y : 'factor' if (x%y==0) else 'not factor'
+```
+* pay attention how the tests were writtem and how the program was modular
+  * things were sorted based on a function which were the different definitons of best
+  * this functions were passed to the implementation of main function
+  * menu was built based on defined class
+  * each defniton could be tested using a test function, to which the different parts of the implementation was passed
+  * there is another main function that does all the testing, one by one
+* the greedy impementation is efficient (nlogn which is the complexit of python's sort and is far better than 2^n of knapsack)
+  * it is also easy to implement
+  * but does not always give the optimal answer and we do not know if it is optimal or how far it is from optimal
+  * from the exercise: a way to get the power set of a set of for example xyz is to calculate the power set of yz and then simply add x to it (keeping the yz). this can be implemented recursively
+    * also the computational complexity of sum is O(n)
+```python
+def get_all_subsets(some_list):
+    """Returns all subsets of size 0 - len(some_list) for some_list"""
+    if len(some_list) == 0:
+        # If the list is empty, return the empty list
+        return [[]]
+    subsets = []
+    first_elt = some_list[0]
+    rest_list = some_list[1:]
+    # Strategy: Get all the subsets of rest_list; for each
+    # of those subsets, a full subset list will contain both
+    # the original subset as well as a version of the subset
+    # that contains first_elt
+    for partial_subset in get_all_subsets(rest_list):
+        subsets.append(partial_subset)
+        next_subset = partial_subset[:] + [first_elt]
+        subsets.append(next_subset)
+    return subsets
+
+NUMBER = 3
+def look_for_all_the_things(myList):
+    """Looks at all subsets of this list"""
+    # Make subsets
+    all_subsets = get_all_subsets(myList)
+    for subset in all_subsets:
+        if sum(subset) == NUMBER:
+            return True
+    return False
+```
+
+## Lecture 2 - decision trees and dynamic programming
+#### Video: Brute force algorithms (segment1)
+* So we saw that greedy is easy to implement and computationaly efficient, but does not always give the optimal answer
+* in brute force, we enumerate all possible solutions, remove the ones that do  not satisfy our connstraits, and from the remaining ones pick the highest solution
+* we do this using search tree
+* we start the search tree or decision tree from the root at the top.
+  * we pick an element from the elements that are available to pick from, this is called left, the scenario where the item is picked, and right is when it is not picked
+  * we keep picking everything, and then after we are doen, we back track and consider the scenario where the item is nt picked and start enumerating possibilities there.
+  * so it is always left first, depth first.
+* complexity: it is expected to be exponential
+  * we have n levels, which is the number of items to be picked from
+  * at each level i, we have 2^i number of nodes (because each level doubles the number of possibilities, so level 0 has 2 beer or not, level 1 has 4 each beer or not has pizza or not ...)
+  * comp lexity is the number of nodes, so add of all 2^i for all levels which is 2^(n+1)
+* there is an optimization to not compute the possibilitites where the constraint is violated, but that does not change the complexity
+* the tree is not being built, but deciding based on variable result
+* the implementation uses a recursive algorithm, we pick an item and calculate the result (by calling the same function), and calculate the result if we had not taken it. and simple compare the two
+* it gives much better answers ttha greed algorithm
+* we can do more constraints, so if we do not want to get three drinks and one food
+* as expecyted, it takes a long time (the example is only 8 and 2^8 is not a large number)
+#### U1L2 exercise1
+* how to generate power sets:
+  * for example for three objects we have 000 to 111 for 2^3 possibilities. 1 meaning it is in the set and zero is not. we generate all 8 numbers, and start parsing them using bit shifts and then decide to put them in the next subset or not
+  * for two boxes, we have ternary and means 3^3, we read the state of the frst one (mod 3) and then subtract it and divide by 3 (bbase) to get the next number
+
+#### Video: recursive fibbonacci
+* we  start building random menus using pythons random, and test our brute force algorrithm and see that it statrs slowing sown quite quickly
+  * notice how code is developed: write a function that build menu based on number of desired itesm, this number is passed to it as an argument, then different number are passed, menus built and the code tested.
+* Dynamic programming to the rescue:
+  * the name is intentially deceptive
+  * in fib example, the code is small, so the problem is the number of times the code calls itself
+  * so we are computing same things multiple times based on the tree in the slides.
+  * it is a good idea to record the results and simply recall them.
+  * this is called memoization
+  * we are trading time for space
+* when it works well:
+  * optimal substructure: optimal solution can be found by combining otinal solutions to local subprobblems
+  * overlapping subproblems: we solve the same problem manyy times, so for example it does not work well very well for merge sort, eventhough we are performing merge-sort many times, but on different llists
+* dynamic programming for knapsack: I think yes!
+
+#### U1L2: video: dynamic programming
+* substructures are optimal, at each node we can simply ask that what do do here? the better from childs
+* overlapping: the items to chose from differ, so dynamic programming helps, but is not much of an spped up
+* change the menu: multiiple ones from same item (two beers for example), and then we have identical nodes
+* they should not be necesarily the same, but also same values etc.
+* in the chart the first number is the order tthat tthe node is generated (left firstd depth frst)
+* POINT: at each node, we decide is it optiimal to take an availbale item or not, BUT it does not matter which items have been taken before, jjjust the weight (remainig weight) for example  nnodes 2 and 7 in our chart
+* we can simply use the length of the toConsider, because we always pick from left, and similar lenggth means same array
+* there is a limit to the depth of the recursion because every time a recursive function is called, the state is saved on the call stack
+  * in python: it is in module sys
+
+
+```python
+import sys
+sys.getrecursionlimit()
+```
+which  is set to 1000
+* without dynamic programming, it is simply exponential, and it can be traced how much dynamic programming is helping us (for example at 16, normally we need 65536 but with dynamic 5191)
+* so how come we are not exponential anymore? computational complextity is suble
+  * exponential is how many irems we need to consider <to consider, avail>
+  * toConsider is len(item)
+  * avail is boumd bby the number of distinct sums of weights ( loook at
+  * assigned reading) pseudopolynomial type
+* summary of lecture 1 and 2:
+  * many problems are optimization problems: can a functionn be defined that nneds to be maximized or minimized based on a set of constraints
+  * greedy: adequate and fast, but not optimal
+  * optimal is usally exponential
+  * dynamic could help if substructure is well defined and subproblems are overlapping
+
+#### U1L2 ex. 2
+* number four with steps: substructure is optimal we can figure out the optimal solution to k+1 and k+2 based on the solution to  k
+* overlapping: if we have 8, the solution to 5 is required in three cases : 1 1 1 5- 1 2 5 - 2 1 5
+
+## Lecture 3 - Graph problems
+#### Video Graphs
+* as we said before, this course is about writing programs ro understand the world and solve problems (modeling and expermnting)
+* we used for example knapsack method to solve the problem of what to eat
+* but for example in the case of knapsack, there was no relation between item and it is not always so easy
+* what is a graph:
+  * a set of nodes or vertices that are cinnected to each other by edges or arcs
+  * each node can have some properties
+  * the edges can have weights
+  * the edges can be bidirectional (simply calles a graph like frinedship on facebook) or one directional (digrapgh)
+* we need graphs because they help us capture relationships between entities
+* the tree we already say is a special kind of a graph
+  * a tree is a directed graph in which each pair of nodes is connected by a single path
+* graphs help uis understadn networks tha are formed by relationships in the world
+* the navigation apps use graph optimization:
+  * each node is where streets meet or end
+  * each edge is an street
+  * edges are weithed based on the time it is needed to drive them
+  * these weights are updated dynamically
+  * we then solve a shorted weighted route in a graph problem
+* this was first introduced by Euler in Koenigsberg.
+  * it is not important that he solved the problem but how he did it:
+    * by abstracting away the unnecessary details
+  * each islans a node, each bridge an edge. all unweighted and biddirectional
+
+#### U1L3 - Exercise1
+* course catalogue (prereq): Each vertex is a class, while a directional edge indicates that one class must come before another.
+* students in line (sort): Vertices represent permutations of the students in line. Edges connect two permutations if one can be made into the other by swapping two adjacent students. is correct. Travelling from one vertex to another through an edge represents a legal move.
+  * FALSE: Vertices represent students. Edges connect two students if they are next to each other in line. only offers information relevant to the current state of the line. There is no information regarding how the line can change.
+  * FALSE: Vertices represent permutations of the students, and each edge represents an individual student. An edge connects two vertices if that student is involved in swap between the two permutations. does not make sense to implement. Multiple edges would have to connect every vertex, and many edges would be needed to fully represent a single child.
+
+#### Video - Graph Class
+* see code
+* node and edges are simple defined
+* if the graph is dense (many edges in comparison to nodes) we use an adjacency matrix
+  * rows: source nodes
+  * columns: destination nodes
+  * if there is an edge from one node t othe other = 1
+  * if the edges are weighted, the cells could be weights
+  * if there is more than one edge between two nodes, the cell could be a list
+* but we use adjacency list, since we are not too dense: associarte with each node a list of destinations
+* we see in the code that graph is a subclass of digraph
+  * if the client code works correctly using an instance of the subertype, it should also work correctly when an instance of the subtype is substituted for the instance of the supertype.
+  * so any program that works with digraph, will also work with graph (but not vice versa)
+* one possible complicaton of shortest path are cycles which was not the case in search trees, because trees do not have cycles
+* in next segment, we will see two solutions to shortest path problems two use the code we a;ready have that builds up a graph
+
+#### U1L3 - Exercise 2

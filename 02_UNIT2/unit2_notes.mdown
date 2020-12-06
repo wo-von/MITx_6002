@@ -1,0 +1,50 @@
+## Lecture 4 - Plotting
+#### pylab
+* plt.plot is the simplest (x and ys)
+
+#### plots
+* mindset: how to change things to better visualize?
+
+## Lecture 5 - Stochastic Thinking
+#### Video: Stochastic processes
+* output of functions cannot be predicted based on the input
+* like copenhangen, which turned philosophical, we mean that it is inherently unpredictable
+* but it really does not matter, inherently or not, it should be treated like it is because of out lack f knowledge
+  * predictive undeterminism
+  * inherently undeterministic is causal undeterminism
+* So even if a proess is causually deterministic, we shoudl treat it like an stochastic *process*, a process whose output depends on previous states and a radom factor
+* underdetermined: we do not know, could be dterministic or not
+* stochastic: has randomness
+* but sth like the root of a polynomial, could be detrministic or not.
+#### Ex1
+* static: not counting time but dynamic does
+* discrete: not the flow of time but some snapshots and abruptly moving between them
+* continous: with flow of time
+
+#### Ex2
+* easy using rand
+  * how it is tested: calling it 1000 times :/
+
+#### Video: Probabilitites
+* Independence gives us the opportuity to look at events as a series of events
+* important takeaways:
+  * do not mix sample probability and actual probability
+  * random generation is impossible, so we have pseudo random, which uses a predictive non deterministic seed, using the same seed will give us the same sequence, which is good for debigging, but might not be desirable for the actual program   
+
+#### Ex6
+* Calculating probabilitites:
+P({first roll larger than second roll}) = P({10, <1, 2, 3, 4, 5, 6, 7, 8, 9>}) + P({9, <1, 2, 3, 4, 5, 6, 7, 8>}) + ... + P({2, 1}) = 9/100 + 8/100 + 7/100 + 6/100 + 5/100 + 4/100 + 3/100 + 2/100 + 1/100 = 45/100 = 9/20 
+this is actually very easy: we have the sample space and all events have the same probability, so we are just counting, orr adding theit probabilitites
+* Another: 3 red 3 green, we take 3 without replacement, probability of getting 3 same color
+  ```
+  In this problem, we don't assume the balls are replaced after being drawn. This changes the probability because with every draw, there is one less ball to pick from. The probability of drawing three red balls is 3/6 * 2/5 * 1/4 -- for the first pick, there are three red balls available and six balls total. For the second pick, if we picked a red ball first, there are now two red balls available and five balls total. For the third pick, if both the first and second picks were red balls, there is now one red ball available and four balls total. Multiply together to get P({R, R, R}) = 1/20.
+  However the problem asked to find the probability of drawing 3 balls of the same color. Thus this probability is P({R, R, R}) + P({G, G, G}). The above analysis works for green balls as well, thus P({R, R, R}) + P({G, G, G}) = 1/20 + 1/20 = 2/20 = 1/10.
+  ```
+#### Random walks
+* for the first walk we used like a probability tree and then the expected distance, but gets very tedious and needs simulation
+
+## Lecture 6 - Random Walks
+#### Location field and drunk
+#### Simulating a walk
+#### Ex2
+* after having initialized a seed, the result always stay the same, tthat is why in the exercise, the length of the array is random because we call random.randint before seed, and after ward, stays the same unless we restart the kernel

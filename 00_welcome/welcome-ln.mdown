@@ -1,0 +1,16 @@
+* having passed 6001 is more than enough (look in the ToDo to see what you are missing)
+* it is easier because the focus is less on programming than how to do it.
+* also esier because we are better programmer
+* toe tipping into datascience
+* so lectures are more abstract and into using computation
+* why?
+  * better programmmer: practice practice practice
+  * more productive use of data: statistical thinking and using packages
+* we build computational models: use computation to understand the world we live in
+  * sth that has happened or to predict the future
+* so it is a kind of a vitual lab instead of a physical one
+* models are:
+  * optimization
+  * statistical
+  * simulation
+* 
